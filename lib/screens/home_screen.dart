@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:string_capitalize/string_capitalize.dart';
+
 import 'package:weather_app/APIs/get_weather_data.dart';
 import 'package:weather_app/widgets/additional_information.dart';
 import 'package:weather_app/widgets/hourly_forecast.dart';
@@ -13,7 +15,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  String cityName = "London";
+  String cityName = "Karachi";
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -36,6 +38,7 @@ class _HomeState extends State<Home> {
           final weatherInfo = snapshot.data!;
 
           return Scaffold(
+            resizeToAvoidBottomInset: false,
             appBar: AppBar(
               title: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -43,19 +46,38 @@ class _HomeState extends State<Home> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       DropdownButton(
-                          hint: const Text("Change City"),
-                          items: cityNames.map((city) {
-                            return DropdownMenuItem(
-                              value: city,
-                              child: Text(city),
-                            );
-                          }).toList(),
+                          hint: const Text("Pakistani Cities"),
+                          items: const [
+                            DropdownMenuItem(
+                              value: "Karachi",
+                              child: Text("Karachi"),
+                            ),
+                            DropdownMenuItem(
+                              value: "Islamabad",
+                              child: Text("Islamabad"),
+                            ),
+                            DropdownMenuItem(
+                              value: "Faisalabad",
+                              child: Text("Faisalabad"),
+                            ),
+                            DropdownMenuItem(
+                              value: "Lahore",
+                              child: Text("Lahore"),
+                            ),
+                            DropdownMenuItem(
+                              value: "Peshawar",
+                              child: Text("Peshawar"),
+                            ),
+                            DropdownMenuItem(
+                              value: "Quetta",
+                              child: Text("Quetta"),
+                            ),
+                          ],
                           onChanged: (newValue) {
                             setState(() {
                               cityName = newValue.toString();
                             });
                           }),
-                      const Text("Weather App"),
                       IconButton(
                           onPressed: () {
                             setState(() {});
@@ -68,9 +90,32 @@ class _HomeState extends State<Home> {
               padding: const EdgeInsets.all(24.0),
               child: Column(
                 children: [
-                  Text(cityName,
+                  Text(cityName.capitalizeEach(),
                       style: const TextStyle(
                           fontSize: 64, fontWeight: FontWeight.bold)),
+
+                  const Text("Enter Any City: ",
+                      style: TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.normal)),
+                  SizedBox(
+                    width: 150,
+                    child: Autocomplete(
+                      optionsBuilder: (textEditingValue) {
+                        if (textEditingValue.text == '') {
+                          return const Iterable<String>.empty();
+                        }
+
+                        return cityNames.where((city) {
+                          return city.contains(textEditingValue.text);
+                        });
+                      },
+                      onSelected: (newValue) {
+                        setState(() {
+                          cityName = newValue.toString();
+                        });
+                      },
+                    ),
+                  ),
 
                   const SizedBox(height: 20),
 
